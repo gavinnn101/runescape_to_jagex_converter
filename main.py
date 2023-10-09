@@ -6,6 +6,8 @@ import time
 # from selenium import webdriver
 import undetected_chromedriver as uc
 
+from multiprocessing.pool import ThreadPool
+
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -353,6 +355,21 @@ def input_password_and_create_account(driver, password) -> bool:
         return True
 
 
+def check_invalid_password(driver) -> bool:
+    """Checks if we got an invalid password error."""
+    try:
+        # Wait for the error message to appear with the specific text
+        error_message = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.XPATH, '//p[contains(., "Your login or password was incorrect")]'))
+        )
+    except Exception as e:
+        logger.error(f"An error occurred while checking for the invalid password error: {e}")
+        return False
+    else:
+        logger.warning("Received invalid password error. Skipping account.")
+        return True
+
+
 def check_for_authenticator(driver) -> bool:
     """Checks if we hit the authenticator page."""
     try:
@@ -403,6 +420,10 @@ def convert_to_jagex_account(
 
     # Click login button
     click_login_button(driver)
+
+    # Check for invalid password
+    if check_invalid_password(driver):
+        return False
 
     # Check for authenticator page
     if check_for_authenticator(driver):
@@ -464,8 +485,34 @@ def convert_to_jagex_account(
         return True
 
 
+def process_account(account, jagex_password):
+    """Process an account."""
+    USERNAME, PASSWORD = account.split(":")
+    BASE_USERNAME = USERNAME.split("@")[0]
+    JAGEX_ACCOUNT_EMAIL = BASE_USERNAME + "@tuamaeaquelaursa.com"
+    JAGEX_ACCOUNT_USERNAME = BASE_USERNAME if BASE_USERNAME.isalpha() else re.sub(r"[^a-z]", "", BASE_USERNAME)  # Username to use for the jagex account. Taken usernames aren't error handled.
+
+    # Get the driver
+    driver = get_driver()
+
+    convert_to_jagex_account(
+        driver=driver,
+        runescape_email=USERNAME, runescape_password=PASSWORD,
+        jagex_username=JAGEX_ACCOUNT_USERNAME, jagex_password=jagex_password, jagex_email=JAGEX_ACCOUNT_EMAIL,
+        base_username=BASE_USERNAME
+    )
+
+    # Close driver for next account
+    driver.close()
+
+
+def error_callback(task_name, e):
+    logger.error(f'{task_name} completed with exception {e}')
+
+
 def main():
     DEBUG = False
+    MAX_CONCURRENT_SESSIONS = 2
 
     ACCOUNT_LIST = [
         "account1@gmail.com:password1",
@@ -479,24 +526,14 @@ def main():
     else:
         logger.add("logs_{time}.log")
 
+    pool_size = min(MAX_CONCURRENT_SESSIONS, len(ACCOUNT_LIST))
+    pool = ThreadPool(pool_size)
+
     for account in ACCOUNT_LIST:
-        USERNAME, PASSWORD = account.split(":")
-        BASE_USERNAME = USERNAME.split("@")[0]
-        JAGEX_ACCOUNT_EMAIL = BASE_USERNAME + "@tuamaeaquelaursa.com"
-        JAGEX_ACCOUNT_USERNAME = BASE_USERNAME if BASE_USERNAME.isalpha() else re.sub(r"[^a-z]", "", BASE_USERNAME)  # Username to use for the jagex account. Taken usernames aren't error handled.
-
-        # Get the driver
-        driver = get_driver()
-
-        convert_to_jagex_account(
-            driver=driver,
-            runescape_email=USERNAME, runescape_password=PASSWORD,
-            jagex_username=JAGEX_ACCOUNT_USERNAME, jagex_password=JAGEX_ACCOUNT_PASSWORD, jagex_email=JAGEX_ACCOUNT_EMAIL,
-            base_username=BASE_USERNAME
-        )
-
-        # Close driver for next account
-        driver.close()
+        pool.apply_async(process_account, args=(account, JAGEX_ACCOUNT_PASSWORD), error_callback=lambda e: error_callback(account, e))
+        time.sleep(5)   # Chrome driver access error otherwise.
+    pool.close()
+    pool.join()
 
     logger.info("Finished converting accounts.")
     sys.exit(0)
