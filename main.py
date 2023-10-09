@@ -495,15 +495,18 @@ def process_account(account, jagex_password):
     # Get the driver
     driver = get_driver()
 
-    convert_to_jagex_account(
-        driver=driver,
-        runescape_email=USERNAME, runescape_password=PASSWORD,
-        jagex_username=JAGEX_ACCOUNT_USERNAME, jagex_password=jagex_password, jagex_email=JAGEX_ACCOUNT_EMAIL,
-        base_username=BASE_USERNAME
-    )
-
-    # Close driver for next account
-    driver.close()
+    try:
+        convert_to_jagex_account(
+            driver=driver,
+            runescape_email=USERNAME, runescape_password=PASSWORD,
+            jagex_username=JAGEX_ACCOUNT_USERNAME, jagex_password=jagex_password, jagex_email=JAGEX_ACCOUNT_EMAIL,
+            base_username=BASE_USERNAME
+        )
+    except Exception as e:
+        logger.error(f"An error occurred while processing account: {e}")
+    finally:
+        # Close driver for next account
+        driver.close()
 
 
 def error_callback(task_name, e):
@@ -524,16 +527,16 @@ def main():
     if DEBUG:
         logger.add("logs_{time}.log", level="DEBUG")
     else:
-        logger.add("logs_{time}.log")
+        logger.add("logs_{time}.log", level="INFO")
 
     pool_size = min(MAX_CONCURRENT_SESSIONS, len(ACCOUNT_LIST))
-    pool = ThreadPool(pool_size)
 
-    for account in ACCOUNT_LIST:
-        pool.apply_async(process_account, args=(account, JAGEX_ACCOUNT_PASSWORD), error_callback=lambda e: error_callback(account, e))
-        time.sleep(5)   # Chrome driver access error otherwise.
-    pool.close()
-    pool.join()
+    with ThreadPool(pool_size) as pool:
+        for account in ACCOUNT_LIST:
+            pool.apply_async(process_account, args=(account, JAGEX_ACCOUNT_PASSWORD), error_callback=lambda e: error_callback(account, e))
+            time.sleep(5)   # Chrome driver access error otherwise.
+        pool.close()
+        pool.join()
 
     logger.info("Finished converting accounts.")
     sys.exit(0)
