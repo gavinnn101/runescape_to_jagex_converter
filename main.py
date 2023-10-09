@@ -23,82 +23,82 @@ def get_driver():
 
 def accept_cookies(driver) -> bool:
     """Clicks the 'Use necessary cookies only' button on the cookies pop-up."""
-    logger.info("Looking for 'Use necessary cookies only' button to click.")
+    logger.debug("Looking for 'Use necessary cookies only' button to click.")
     try:
         # Use the id attribute to find the button
         cookies_button = WebDriverWait(driver, 20).until(
             EC.element_to_be_clickable((By.ID, "CybotCookiebotDialogBodyButtonDecline"))
         )
         # Click the button to accept necessary cookies
-        logger.info("Clicking 'Use necessary cookies only' button.")
+        logger.debug("Clicking 'Use necessary cookies only' button.")
         cookies_button.click()
     except Exception as e:
         logger.error(f"An error occurred while trying to accept cookies: {e}")
         return False
     else:
-        logger.info("Successfully clicked 'Use necessary cookies only' button.")
+        logger.debug("Successfully clicked 'Use necessary cookies only' button.")
         return True
 
 
 def navigate_to_login_page(driver) -> bool:
     """Clicks the 'account' header button on the home page to get to the login page."""
-    logger.info("Looking for 'account' button to click.")
+    logger.debug("Looking for 'account' button to click.")
     try:
         # Use the data-test attribute to find the button
         account_button = WebDriverWait(driver, 20).until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, 'a[data-test="header-sub-account"]'))
         )
         # Click "account" button
-        logger.info("Clicking 'account' button.")
+        logger.debug("Clicking 'account' button.")
         account_button.click()
     except Exception as e:
         logger.error(f"An error occurred: {e}")
         return False
     else:
-        logger.info("Successfully clicked 'account' button.")
+        logger.debug("Successfully clicked 'account' button.")
         return True
 
 
 def enter_username(driver, email) -> bool:
     """Enters the username into the login form."""
-    logger.info("Looking for username input field element to enter username.")
+    logger.debug("Looking for username input field element to enter username.")
     try:
         # Wait up to 10 seconds for the element to become available
         username_element = WebDriverWait(driver, 20).until(
             EC.presence_of_element_located((By.ID, "email"))
         )
         # Enter the email into the element
-        logger.info("Entering username into username input field.")
+        logger.debug("Entering username into username input field.")
         driver.switch_to.active_element.send_keys(email)
     except Exception as e:
         logger.error(f"An error occurred: {e}")
         return False
     else:
-        logger.info("Successfully entered username into username input field.")
+        logger.debug("Successfully entered username into username input field.")
         return True
 
 
 def click_submit_button(driver) -> bool:
     """Clicks the submit button to continue after entering username."""
-    logger.info("Looking for submit button to click.")
+    logger.debug("Looking for submit button to click.")
     try:
         # Wait for the submit button to become clickable and then click it
         submit_button = WebDriverWait(driver, 20).until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[data-testid="continue-with-assisted-via-email-flow"]'))
         )
-        logger.info("Clicking submit button.")
+        logger.debug("Clicking submit button.")
         submit_button.click()
     except Exception as e:
         logger.error(f"An error occurred while trying to click the submit button: {e}")
         return False
     else:
-        logger.info("Successfully clicked the submit button.")
+        logger.debug("Successfully clicked the submit button.")
         return True
 
 
 def enter_password(driver, password) -> bool:
     """Enters the password into the currently active password field."""
-    logger.info("Entering password into the active password field.")
+    logger.debug("Entering password into the active password field.")
     try:
         # Send password to the currently active input box
         driver.switch_to.active_element.send_keys(password)
@@ -106,69 +106,69 @@ def enter_password(driver, password) -> bool:
         logger.error(f"An error occurred while trying to enter the password: {e}")
         return False
     else:
-        logger.info("Successfully entered the password into the password field.")
+        logger.debug("Successfully entered the password into the password field.")
         return True
 
 
 def click_login_button(driver) -> bool:
     """Clicks the login button to continue after entering password."""
-    logger.info("Looking for login button to click.")
+    logger.debug("Looking for login button to click.")
     try:
         # Wait for the login button to become clickable and then click it
         login_button = WebDriverWait(driver, 20).until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[data-test="login"]'))
         )
-        logger.info("Clicking login button.")
+        logger.debug("Clicking login button.")
         login_button.click()
     except Exception as e:
         logger.error(f"An error occurred while trying to click the login button: {e}")
         return False
     else:
-        logger.info("Successfully clicked the login button.")
+        logger.debug("Successfully clicked the login button.")
         return True
 
 
 def click_upgrade_image(driver) -> bool:
     """Clicks the upgrade image to proceed."""
-    logger.info("Looking for upgrade image to click.")
+    logger.debug("Looking for upgrade image to click.")
     try:
         # Wait for the image to become clickable and then click it
         upgrade_image = WebDriverWait(driver, 20).until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, 'img[alt="Jagex Accounts - Enhance your security. Upgrade."]'))
         )
-        logger.info("Clicking upgrade image.")
+        logger.debug("Clicking upgrade image.")
         upgrade_image.click()
     except Exception as e:
         logger.error(f"An error occurred while trying to click the upgrade image: {e}")
         return False
     else:
-        logger.info("Successfully clicked the upgrade image.")
+        logger.debug("Successfully clicked the upgrade image.")
         return True
 
 
 def click_start_button(driver) -> bool:
     """Clicks the 'Start' button to proceed."""
-    logger.info("Looking for 'Start' button to click.")
+    logger.debug("Looking for 'Start' button to click.")
     try:
         # Wait for the 'Start' button to become clickable and then click it
         start_button = WebDriverWait(driver, 20).until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[data-testid="account-migration--button-start"]'))
         )
-        logger.info("Clicking 'Start' button.")
+        logger.debug("Clicking 'Start' button.")
         start_button.click()
     except Exception as e:
         logger.error(f"An error occurred while trying to click the 'Start' button: {e}")
         return False
     else:
-        logger.info("Successfully clicked the 'Start' button.")
+        logger.debug("Successfully clicked the 'Start' button.")
         return True
 
 
 def input_email(driver, email) -> bool:
-    logger.info(f"Entering email address ({email}) into the email input field.")
+    logger.debug(f"Entering email address ({email}) into the email input field.")
     time.sleep(5)
     active_el = driver.switch_to.active_element
-    logger.info(f"Active element: {active_el.get_attribute('outerHTML')}")
+    logger.debug(f"Active element: {active_el.get_attribute('outerHTML')}")
     try:
         email_field = WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.XPATH, '/html/body/div/div/div/div/form/div[1]/label/input')))
         email_field.send_keys(email)
@@ -176,12 +176,12 @@ def input_email(driver, email) -> bool:
         logger.error(f"An error occurred while trying to enter the email: {e}")
         return False
     else:
-        logger.info("Successfully entered the email address.")
+        logger.debug("Successfully entered the email address.")
         return True
 
 
 def input_dob(driver, day, month, year) -> bool:
-    logger.info("Entering date of birth into the respective fields.")
+    logger.debug("Entering date of birth into the respective fields.")
     try:
         day_field = WebDriverWait(driver, 20).until(
             EC.presence_of_element_located((By.XPATH, "/html/body/div/div/div/div/form/div[4]/div[1]/div/label/input"))
@@ -201,12 +201,12 @@ def input_dob(driver, day, month, year) -> bool:
         logger.error(f"An error occurred while trying to enter the date of birth: {e}")
         return False
     else:
-        logger.info("Successfully entered the date of birth.")
+        logger.debug("Successfully entered the date of birth.")
         return True
 
 
 def click_agree_checkbox(driver) -> bool:
-    logger.info("Looking for 'I agree' checkbox to click.")
+    logger.debug("Looking for 'I agree' checkbox to click.")
     try:
         agree_checkbox = WebDriverWait(driver, 20).until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, 'input[data-testid="registration-start-accept-agreements"]'))
@@ -216,7 +216,7 @@ def click_agree_checkbox(driver) -> bool:
         logger.error(f"An error occurred while trying to click the 'I agree' checkbox: {e}")
         return False
     else:
-        logger.info("Successfully clicked the 'I agree' checkbox.")
+        logger.debug("Successfully clicked the 'I agree' checkbox.")
         return True
 
 
@@ -241,7 +241,7 @@ def access_email_on_website(driver, email_address) -> bool:
         logger.error(f"Error opening email website in new tab: {e}")
         return False
     else:
-        logger.info(f"Successfully accessed the inbox for email: {email_address} in the new tab.")
+        logger.debug(f"Successfully accessed the inbox for email: {email_address} in the new tab.")
         return True
 
 
@@ -264,7 +264,7 @@ def get_verification_code(driver) -> str:
         match = re.search(r'([A-Z0-9]+) is your Jagex verification code', message_text)
         if match:
             verification_code = match.group(1)
-            logger.info(f"Extracted verification code: {verification_code}")
+            logger.debug(f"Extracted verification code: {verification_code}")
             return verification_code
         else:
             logger.warning("Couldn't extract the verification code from the most recent message.")
@@ -286,7 +286,7 @@ def click_continue_button(driver) -> bool:
         logger.error(f"An error occurred while trying to click the 'Continue' button: {e}")
         return False
     else:
-        logger.info("Successfully clicked the 'Continue' button.")
+        logger.debug("Successfully clicked the 'Continue' button.")
         return True
 
 
@@ -303,7 +303,7 @@ def input_verification_code(driver, code) -> bool:
         logger.error(f"An error occurred while inputting the verification code: {e}")
         return False
     else:
-        logger.info("Successfully inputted the code and clicked the 'Continue' button.")
+        logger.debug("Successfully input verification code and clicked the 'Continue' button.")
         return True
 
 
@@ -316,10 +316,10 @@ def enter_jagex_name(driver, email_address) -> bool:
         active_field = driver.switch_to.active_element
         active_field.send_keys(email_address)
     except Exception as e:
-        logger.error(f"An error occurred while inputting the jagex name: {e}")
+        logger.error(f"An error occurred while inputting the jagex username: {e}")
         return False
     else:
-        logger.info("Successfully input the email.")
+        logger.debug("Successfully input jagex username.")
         return True
 
 
@@ -349,7 +349,7 @@ def input_password_and_create_account(driver, password) -> bool:
         logger.error(f"An error occurred while inputting the password and clicking 'Create account': {e}")
         return False
     else:
-        logger.info("Successfully inputted the password and clicked the 'Create account' button.")
+        logger.info("Successfully input password and clicked the 'Create account' button.")
         return True
 
 
@@ -437,7 +437,7 @@ def convert_to_jagex_account(
 
     # Get verification code
     code = get_verification_code(driver)
-    logger.info(f"Verification code: {code}")
+    logger.debug(f"Verification code: {code}")
 
     if code:
         # Input code and continue
@@ -465,8 +465,7 @@ def convert_to_jagex_account(
 
 
 def main():
-    # Log to file
-    logger.add("logs_{time}.log")
+    DEBUG = False
 
     ACCOUNT_LIST = [
         "account1@gmail.com:password1",
@@ -474,6 +473,11 @@ def main():
     ]
 
     JAGEX_ACCOUNT_PASSWORD = "Secure!0123"  # Password to use for the jagex account. Jagex password must not be considered "weak"
+
+    if DEBUG:
+        logger.add("logs_{time}.log", level="DEBUG")
+    else:
+        logger.add("logs_{time}.log")
 
     for account in ACCOUNT_LIST:
         USERNAME, PASSWORD = account.split(":")
